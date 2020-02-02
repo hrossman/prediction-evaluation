@@ -11,4 +11,4 @@ Roadmap:
   
   2. Port and refine code for SHAP analysis plots
 
-![Alt text](/example_eval_plots.png?raw=true "")
+![Alt text](/example_eval_plots.png?raw=true)
