@@ -184,6 +184,8 @@ def dep_plot(feature_name, shap_values, features, shap_columns=None, ax=None,
     if shap_columns is None:
         y = shap_values[feature_name].rename('y')
     else:
+        # intersect of existing shap columns
+        shap_columns = list(set((features.columns).intersection(shap_columns)))
         y = shap_values[shap_columns].sum(axis=1).rename('y')
     
     # Transform y according to inputs
