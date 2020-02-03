@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.special import expit
-
+import statsmodels.api as sm
 
 def convert_shap_values(y, base_shap, y_transform=None):
     """
@@ -143,7 +143,12 @@ def dep_plot(feature_name, shap_values, features, shap_columns=None, ax=None,
         x = x.apply(lambda xx: bins_mid_x[np.abs(xx-bins_mid_x).argmin()])
         
     # Plot type
-    if plot_type=='lineplot':
+    if plot_type=='lowess':
+        ax.scatter(x_raw, y, s=8, color=color, alpha=0.1)
+        lowess = sm.nonparametric.lowess
+        z = lowess(y, x_raw)
+        ax.plot(z[:,0], z[:,1])
+    elif plot_type=='lineplot':
         sns.lineplot(data=pd.concat((x,y),axis=1),x='x',y='y',ci=None,color=color, ax=ax)
         ax.get_legend().remove()
     else:
