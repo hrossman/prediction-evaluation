@@ -11,4 +11,9 @@ Roadmap:
   
   2. Port and refine code for SHAP analysis plots
 
-![Alt text](/example_eval_plots.png?raw=true)
+Examples:
+## Prediction evaluation plots
+![Alt text](/images/example_eval_plots.png?raw=true)
+
+## Decision Curve Analysis
+![Alt text](/images/example_DCA.png?raw=true)
