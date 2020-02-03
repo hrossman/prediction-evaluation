@@ -422,19 +422,10 @@ def plot_calibration_curve(y_true, probs, n_bins=10, ax=None, bins_by_percentile
         # obtain moving aberages
         mean_x = moving_average(probs[sorted_inds], win_size)
         mean_y = moving_average(y_true[sorted_inds], win_size)
-        # plot for debug purposes only
-#         ax.plot(mean_x,mean_y, '.')
-        # smoothe plot with lowess
-        ax.plot(mean_x, lowess(mean_y,mean_x, frac=1/3)[:,1], color=color, label='Non-parametric')
+        # smoothen with lowess
+        ax.plot(mean_x, lowess(mean_y,mean_x, frac=1/4)[:,1], color=color, alpha=0.4, lw=3, label='Non-parametric')
 
-#         bins = np.linspace(0., 1., 1*n_bins + 1)
-#         bins[-1] = bins[-1]+1e-6
-#         bins_mid_x = np.array([(a+b)/2 for a,b, in zip(bins[:-1], bins[1:])])
-#         # find closest bin middle and transform x
-#         mean_x = pd.Series(mean_x).apply(lambda xx: bins_mid_x[np.abs(xx-bins_mid_x).argmin()]).values
-#         sns.lineplot(mean_x, mean_y)
-
-    ax.plot(prob_pred, prob_true, ls='', marker="d", markersize=10, color=color, label='Grouped patients')
+    ax.plot(prob_pred, prob_true, ls='', marker="d", markersize=8, color=color, label='Grouped patients')
     
     ax.set_xlabel(x_lbl, fontsize=sz)
     ax.set_ylabel('Fraction of positive samples', fontsize=sz)
@@ -566,7 +557,7 @@ def quickplot_eval_3(y_true, y_pred, p_high=1.0):
     precision, recall, thresholds = plot_pr_curve(y_true, y_pred, ax=ax, fill=True, return_vals=True)
 
     ax = axes[2]
-    plot_calibration_curve(y_true, y_pred, ax=ax, plot_lowess=False, n_bins=10)
+    plot_calibration_curve(y_true, y_pred, ax=ax, plot_lowess=True, n_bins=10)
     ax.set_xlim(0,p_high)
     ax.set_ylim(0,p_high)
     ax.grid()
@@ -588,7 +579,7 @@ def quickplot_eval_4(y_true, y_pred, p_high=1.0):
 
     ## Calibration
     ax = axes[0,1]
-    plot_calibration_curve(y_true, y_pred, ax=ax, plot_lowess=False, n_bins=10)
+    plot_calibration_curve(y_true, y_pred, ax=ax, plot_lowess=True, n_bins=10)
     ax.set_xlim(0,p_high)
     ax.set_ylim(0,p_high)
     ax.grid()
