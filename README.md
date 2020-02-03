@@ -2,7 +2,7 @@
 
 Repo that contains utility functions for evaluating clinical predictions
 
-See examples for most of the stuff in [this notebook](/NHFES_classification_example.ipynb)
+See examples for most of the stuff in [this notebook](https://github.com/hrossman/prediction-evaluation-utils/blob/master/NHFES%20classification%20example.ipynb)
 
 Roadmap:
 1. Port and refine code for evaluation of classification tasks:
