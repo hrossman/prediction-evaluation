@@ -5,9 +5,81 @@ import seaborn as sns
 from scipy.special import expit
 import statsmodels.api as sm
 
+
+def get_shap_categories(shap_values, features, features_categories, feat_col, cat_col):
+    """
+    Group shap values into feature category groups
+    
+    Parameters
+    ----------
+    shap_values: SHAP values numpy array
+    features: pandas dataframe of X
+    features_categories: a pandas df that contains feature names in feat_col and categories in cat_col
+    feat_col: name of column with features names
+    cat_col: name of column withcategories names
+    
+                
+    Returns
+    -------
+    shap_values_cats: pandas df with grouped shap values into feature category groups
+    
+    """
+    # Make shap_values a Dataframe with named columns
+    shap_values = pd.DataFrame(data=shap_values, columns=features.columns)
+    
+    # retain only relevant columns in feature_categories
+    features_categories = features_categories[features_categories[feat_col].isin(features.columns)]
+    
+    shap_values_cats = pd.DataFrame(index=shap_values.index)
+    for cat_val in features_categories[cat_col].unique():
+        cols = list(features_categories.loc[features_categories[cat_col]==cat_val,feat_col])
+        shap_values_cats.loc[:,cat_val] = shap_values[cols].sum(axis=1)
+    
+#     shap_values_mean_abs = shap_values_cats_df.abs().mean().sort_values(ascending=False).to_frame().reset_index()
+#     shap_values_mean_abs.columns = ['Feature category', 'Mean absolute SHAP']
+    
+    return shap_values_cats
+
+
+def plot_shap_summary_bar(shap_values_df, ax=None, sz=14):
+    """
+    Plot bar plot of mean abosulute SHAP values
+    
+    Parameters
+    ----------
+    shap_values_df: pandas dataframe of SHAP values
+    ax: matplotlib axes
+    sz: size for fonts   
+                
+    Returns
+    -------
+    ax: matplotlib axes
+    
+    """
+    data = shap_values_df.abs().mean(axis=0).reset_index()
+    data.columns = ['Feature category', 'Mean absolute SHAP']
+    data.sort_values('Mean absolute SHAP', ascending=False, inplace=True)
+    
+    if ax is None:
+        fig,ax = plt.subplots(1,1,figsize=(10,len(data)//2))
+        
+    sns.barplot(y='Feature category', x='Mean absolute SHAP',data=data, color=sns.color_palette('coolwarm')[0], ax=ax)
+
+    axis_color='#333333'
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.tick_params(bottom=True, left=False)
+    ax.tick_params('x', labelsize=sz)
+    ax.tick_params('y', labelsize=sz)
+    ax.set_ylabel('')
+    ax.set_xlabel('Mean absolute Shapely value', fontsize=sz);
+    return ax
+
+
 def convert_shap_values(y, base_shap, y_transform=None):
     """
-   Transform SHAP values from log-odds scale to other scales
+    Transform SHAP values from log-odds scale to other scales
     
     Parameters
     ----------
