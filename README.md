@@ -2,6 +2,8 @@
 
 Repo that contains utility functions for evaluating clinical predictions
 
+See examples for most of the stuff in [this notebook](/NHFES_classification_example.ipynb)
+
 Roadmap:
 1. Port and refine code for evaluation of classification tasks:
   * ROC
