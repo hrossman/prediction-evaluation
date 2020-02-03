@@ -10,7 +10,7 @@ from matplotlib.lines import Line2D
 from sklearn.metrics.ranking import _binary_clf_curve
 from scipy.stats import norm
 from sklearn.model_selection import KFold, StratifiedKFold
-
+from sklearn.utils import resample
 
 
 ############################## General utils ##############################
@@ -69,7 +69,9 @@ def calc_auROC_simple(ytest,ypred):
     return(auc(fpr,tpr))
 
 
-def calc_AUC_with_CI(ytest,ypred,curve_type='ROC',n_splits=10,bootstrap=False,method='normal',ci=[5,95],return_all_results=False, mean_or_median='mean'):
+def calc_AUC_with_CI(ytest, ypred, curve_type='ROC',
+                     n_splits=100, bootstrap=True, method='sort', ci=[2.5,97.5],
+                     return_all_results=False, mean_or_median='median'):
     """
     Calculates area under curve for either ROc or PR, with confidence intervals.
         
@@ -81,10 +83,10 @@ def calc_AUC_with_CI(ytest,ypred,curve_type='ROC',n_splits=10,bootstrap=False,me
     n_splits: number of repetitions/splits to use
     bootstrap: True will use bootstrapping over the tested set, False will use 
             splitting the tested set and calculation of the metric over each
-            split. Default: False
+            split. Default: True
     method: confidence intervals calculation method. Either 'sort' for actual
-            percentile, or 'normal' for normal CDF fit. Default: 'normal'
-    ci: confidence interal, in percentiles. Default: [5,95]
+            percentile, or 'normal' for normal CDF fit. Default: 'sort'
+    ci: confidence interal, in percentiles. Default: [2.5,97.5]
     
     Returns
     -------
@@ -158,7 +160,6 @@ def plot_roc_curve(y_true, y_pred, ax=None, label_head=None, fill=False,
     
     fpr, tpr, thresholds = roc_curve(y_true, y_pred)
     auROC, auROC_CI = calc_AUC_with_CI(y_true, y_pred, curve_type='ROC')
-#     roc_auc = auc(fpr, tpr)
     
     if label_head is None:
         label = 'auROC={:.3f} ({:.3f}-{:.3f})'.format(auROC, auROC_CI[0], auROC_CI[1])
@@ -202,7 +203,7 @@ def plot_roc_thresholds(ax, fpr, tpr, thresholds,
             
 ############################## Precision Recall ##############################
 
-def plot_blank_pr(y_true, ax=None, sz=16):
+def plot_blank_pr(y_true, ax=None, sz=18):
     
     if ax is None:
         fig, ax = plt.subplots(1,1,figsize=(6,5));
@@ -226,7 +227,7 @@ def plot_blank_pr(y_true, ax=None, sz=16):
     
     
 def plot_pr_curve(y_true, y_pred, ax=None, label_head=None, fill=False,
-                   color='b', sz=16, plot_thresholds=False, return_vals=False):
+                   color='b', sz=18, plot_thresholds=False, return_vals=False):
 
     y_true, y_pred = possibly_values(y_true), possibly_values(y_pred)
     
@@ -312,7 +313,7 @@ def _calibration_curve_percentiles(y_true, y_prob, normalize=False, n_bins=5):
 
 
 def _calibration_curve_hist(y_true, probs, hist_bins=None, hist_colors=['r','g'],
-                            ax=None, ax_hist=None, as_subplot=False, sz=16, y_lim_multiplier=3):
+                            ax=None, ax_hist=None, as_subplot=False, sz=18, y_lim_multiplier=3):
     """
     Standard positive/negative histogram for calibration curves
     """
@@ -356,7 +357,7 @@ def _calibration_curve_hist(y_true, probs, hist_bins=None, hist_colors=['r','g']
 
 def plot_calibration_curve(y_true, probs, n_bins=10, ax=None, bins_by_percentile = True, hist=_calibration_curve_hist,
                            normalize=False, color='b', show_metrics=False, plot_lowess=False,
-                           sz=16, as_subplot=False, **hist_params):
+                           sz=18, as_subplot=False, **hist_params):
     """
     Plot a calibration curve
     Some taken from Andreas Muller's course: http://www.cs.columbia.edu/~amueller/comsw4995s18/

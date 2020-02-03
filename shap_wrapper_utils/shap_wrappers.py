@@ -136,7 +136,7 @@ def dep_plot(feature_name, shap_values, features, shap_columns=None, ax=None,
              x_min=None, x_max=None, x_round=None, manual_bins=None,
              x_quantile_min=None, x_quantile_max=None,
              plot_hist=True, plot_type=None,
-             SZ=16, color=sns.color_palette()[0], hist_color='k'):
+             SZ=16, color=sns.color_palette()[0], hist_color='k', smoother_color='r'):
     """
     Custom version of SHAP's dependence plot
     
@@ -219,15 +219,15 @@ def dep_plot(feature_name, shap_values, features, shap_columns=None, ax=None,
         
     # Plot type
     if plot_type=='lowess':
-        ax.scatter(x_raw, y, s=8, color=color, alpha=0.1)
+        ax.scatter(x_raw, y, s=8, color=color, facecolors='none')
         lowess = sm.nonparametric.lowess
-        z = lowess(y, x_raw)
-        ax.plot(z[:,0], z[:,1])
+        z = lowess(y, x_raw, frac=1/8)
+        ax.plot(z[:,0], z[:,1], color=smoother_color, lw=4, alpha=0.5)
     elif plot_type=='lineplot':
         sns.lineplot(data=pd.concat((x,y),axis=1),x='x',y='y',ci=None,color=color, ax=ax)
         ax.get_legend().remove()
     else:
-        ax.scatter(x_raw, y, s=8, color=color, alpha=0.1)
+        ax.scatter(x_raw, y, s=8, color=color, facecolors='none')
     
     if feature_text is not None:
         xlabel = feature_text
