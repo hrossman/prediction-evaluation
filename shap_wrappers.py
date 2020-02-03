@@ -41,6 +41,7 @@ def convert_shap_values(y, base_shap, y_transform=None):
         y_lbl = 'Log Relative Risk'
         y = np.log(expit(base_shap+y)/expit(base_shap))
     else:
+        # retain original SHAP value in y (log Odds)
         y_lbl = 'Shapely Value'
     return y, y_lbl
 
@@ -83,11 +84,11 @@ def dep_plot(feature_name, shap_values, features, shap_columns=None, ax=None,
     add_nan: add shap values for nan features on the left of the plot
     nan_label: label on x axis for nans
     x_min, x_max: minimal/maximal feature value to plot
-    x_round: rounding order of magnitude. It is advised to use some rounding in continuous features
+    x_round: rounding order of magnitude. Use some rounding in continuous features when using lineplot
     manual_bins: set manual bins for plotting lineplot width 
     x_quantile_min, x_quantile_max: filter min/max feature value by feature quantile given here
     plot_hist: plot feature value histogram at bottom of plot
-    plot_type: None plots bands from std in bins. 'scatter' plots all datapoints in a scatterplot
+    plot_type: None or  'scatter' plots all datapoints in a scatterplot. 'lowess' adds a smoother, 'lineplot' usese seaborn lineplot.
     SZ: label fontsize
     color: color
     hist_color: color for histogram    
